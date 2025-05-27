@@ -5,8 +5,22 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+  },
+  address: { type: String }, // Human readable address
   createdAt: { type: Date, default: Date.now },
 });
+
+// Only create geospatial index if location exists
+userSchema.index({ location: '2dsphere' }, { sparse: true });
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

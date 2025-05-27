@@ -13,18 +13,22 @@ const animalSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ['Point'],
-      default: 'Point',
+      required: true
     },
     coordinates: {
       type: [Number],
       required: true,
     },
   },
+  address: { type: String, required: true }, // Human readable address like "Delhi, India"
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  status: { type: String, enum: ['available', 'adopted'], default: 'available' },
+  status: { type: String, enum: ['available', 'adopted', 'pending'], default: 'available' },
   createdAt: { type: Date, default: Date.now },
 });
 
 animalSchema.index({ location: '2dsphere' });
+animalSchema.index({ species: 1 });
+animalSchema.index({ status: 1 });
+animalSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Animal', animalSchema);

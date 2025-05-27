@@ -14,7 +14,10 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:8080' }));
+app.use(cors({ 
+  origin: ['http://localhost:8080', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(fileUpload({
   useTempFiles: true,
@@ -25,6 +28,11 @@ app.use(fileUpload({
 app.use('/api/auth', authRoutes);
 app.use('/api/animals', animalRoutes);
 app.use('/api/adoptions', adoptionRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 // Error Handler
 app.use(errorHandler);
